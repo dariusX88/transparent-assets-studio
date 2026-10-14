@@ -1,0 +1,4 @@
+interface:
+  display_name: "Transparent Assets Studio"
+  short_description: "Create and edit reusable e-commerce product assets"
+  default_prompt: "Use $transparent-assets-studio to open my studio or create and edit a product collection."

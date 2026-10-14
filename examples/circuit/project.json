@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "name": "Circuit",
+  "brand": "CIRCUIT",
+  "kicker": "PERFUME FOR DEVELOPERS",
+  "headline": "Built for life beyond the screen.",
+  "tagline": "The human behind the machine.",
+  "assets": [
+    {
+      "id": "core",
+      "name": "Core",
+      "filename": "circuit-core.png",
+      "file": "circuit-core.png"
+    },
+    {
+      "id": "flow",
+      "name": "Flow",
+      "filename": "circuit-flow.png",
+      "file": "circuit-flow.png"
+    },
+    {
+      "id": "night",
+      "name": "Night",
+      "filename": "circuit-night.png",
+      "file": "circuit-night.png"
+    },
+    {
+      "id": "pocket",
+      "name": "Pocket",
+      "filename": "circuit-pocket.png",
+      "file": "circuit-pocket.png"
+    }
+  ],
+  "settings": {
+    "layout": "campaign",
+    "arrangement": "all",
+    "product": "core",
+    "placement": "right",
+    "theme": "spring",
+    "scale": 90,
+    "checker": false
+  }
+}

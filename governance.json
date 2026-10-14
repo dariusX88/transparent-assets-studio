@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "purpose": "User-triggered e-commerce product image generation, editing, and local composition",
+  "riskTier": 0,
+  "scope": ["built-in image generation", "built-in image editing", "local project files", "local previews and exports"],
+  "requiresSeparateAuthorization": ["external uploads", "publishing", "paid API fallback", "store operations", "credentials", "background automation"],
+  "enforcedByLocalCode": ["PNG size and dimension bounds", "pixel decoding and alpha verification in builder", "manifest file path confinement", "output overwrite refusal", "metadata escaped before HTML embedding", "browser import validation"],
+  "enforcedByHostOrWorkflow": ["host tool permissions", "generation provider choice", "external action approval", "preserve source images and edit to sibling versions", "package only intended deliverables"],
+  "retention": "Explicit local files and downloaded project exports; browser composition state is temporary",
+  "network": "Local builder and browser composition have no API integration. AI image tools use the host provider and account."
+}

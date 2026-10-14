@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transparent Assets Studio</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #252d29; background: #f1f3ef; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header, main, footer { max-width: 1320px; margin: auto; padding: 24px 32px; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dddcd3; }
+    .brand { font-weight: 700; letter-spacing: -.04em; font-size: 24px; }
+    .tag, .eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; }
+    .tag { border: 1px solid #cdd5c8; padding: 8px 12px; border-radius: 30px; }
+    h1 { font-family: system-ui, sans-serif; font-weight: 650; font-size: clamp(32px, 5vw, 60px); margin: 12px 0; letter-spacing: -.055em; }
+    .intro { color: #606962; max-width: 720px; line-height: 1.6; margin: 0 0 30px; }
+    .studio { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 24px; align-items: start; }
+    aside { background: #fffefa; border: 1px solid #dddcd3; border-radius: 18px; padding: 24px; }
+    .field { margin-bottom: 22px; }
+    label, legend { font-size: 13px; font-weight: 650; display: block; margin-bottom: 9px; }
+    fieldset { padding: 0; margin: 0; border: 0; }
+    input[type=text], select { width: 100%; background: white; border: 1px solid #b8c0b6; padding: 10px; border-radius: 8px; font: inherit; font-size: 14px; }
+    input[type=range] { width: 100%; accent-color: #315c42; }
+    .swatches { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    button, .upload { cursor: pointer; font: inherit; font-size: 13px; border: 1px solid #b8c0b6; border-radius: 9px; padding: 11px 12px; background: #fffefa; color: #252d29; text-align: center; }
+    button[aria-pressed=true] { outline: 2px solid #315c42; outline-offset: 1px; font-weight: 700; }
+    button:hover, .upload:hover { filter: brightness(.96); }
+    button:disabled { opacity: .45; cursor: wait; }
+    button:focus-visible, input:focus-visible, select:focus-visible, .upload:focus-within { outline: 3px solid #8b6fe0; outline-offset: 3px; }
+    .primary { background: #28573d; color: #fff; border-color: #28573d; width: 100%; font-weight: 650; }
+    .secondary { width: 100%; margin-top: 9px; }
+    .upload { display: block; font-weight: 500; position: relative; }
+    .upload input { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; }
+    .hint { font-size: 12px; line-height: 1.5; color: #67716a; margin: 7px 0 0; }
+    .check { display: flex; align-items: center; gap: 9px; font-weight: 500; }
+    input[type=checkbox] { accent-color: #315c42; width: 17px; height: 17px; }
+    .preview-area { min-width: 0; }
+    .preview-frame { background: #eae8df; border: 1px solid #dddcd3; border-radius: 18px; padding: 18px; min-height: 420px; display: grid; place-items: center; }
+    canvas { display: block; width: 100%; height: auto; max-height: 640px; object-fit: contain; border-radius: 8px; }
+    .preview-caption { display: flex; justify-content: space-between; gap: 15px; font-size: 12px; color: #67716a; padding: 16px 2px; }
+    .status { border-top: 1px solid #dddcd3; padding-top: 18px; line-height: 1.6; font-size: 13px; }
+    .status strong { display: block; }
+    .error { color: #a82a2a; }
+    footer { color: #67716a; font-size: 12px; line-height: 1.7; }
+    @media (max-width: 800px) { header, main, footer { padding: 20px; } .studio { grid-template-columns: 1fr; } .preview-area { order: -1; } .preview-frame { min-height: 240px; } aside { padding: 20px; } .tag { font-size: 10px; } }
+  </style>
+</head>
+<body>
+  <header><div class="brand">Transparent Assets Studio</div><span class="tag">Your product workspace</span></header>
+  <main>
+    <div class="eyebrow">Create · edit · compose · save</div>
+    <h1>Built for life beyond the screen.</h1>
+    <p class="intro">Create and edit product images with your AI assistant, then add them here. Compose a collection, change backgrounds, and save a project you can reopen or share.</p>
+    <div class="studio">
+      <aside aria-label="Composition controls">
+        <div class="field"><label for="brand">Brand / collection name</label><input id="brand" type="text" maxlength="40"><select id="collection" hidden><option value="circuit">Current collection</option><option value="custom" disabled>Uploaded PNG</option></select></div>
+        <div class="field"><label for="arrangement">Products shown</label><select id="arrangement" disabled><option value="one">One product</option><option value="two">Two products</option><option value="all" selected>Full collection</option></select></div>
+        <div class="field"><label for="product">Featured product / first in lineup</label><select id="product" disabled><option value="core">Core · eau de parfum</option><option value="flow">Flow · frosted glass</option><option value="night">Night · violet smoked glass</option><option value="pocket">Pocket · travel spray</option></select></div>
+        <div class="field"><label for="layout">Format</label><select id="layout"><option value="campaign">Campaign banner · 1200 × 750</option><option value="slide">Presentation · 1600 × 900</option><option value="social">Social post · 1080 × 1080</option></select></div>
+        <div class="field"><fieldset><legend>Background</legend><div class="swatches" id="backgrounds"><button type="button" data-theme="spring" aria-pressed="true" style="background:#183e33;color:white">Terminal</button><button type="button" data-theme="summer" aria-pressed="false" style="background:#e3e9e3">Studio</button><button type="button" data-theme="autumn" aria-pressed="false" style="background:#cddde9">Cloud</button><button type="button" data-theme="winter" aria-pressed="false" style="background:#282239;color:white">Midnight</button></div></fieldset></div>
+        <div class="field"><label for="headline">Headline</label><input id="headline" type="text" maxlength="80" value="Built for life beyond the screen."></div>
+        <div class="field"><label for="placement">Asset position</label><select id="placement"><option value="right">Right</option><option value="left">Left</option><option value="center">Center · artwork only</option></select></div>
+        <div class="field"><label for="scale">Asset size <output id="scaleValue">90%</output></label><input id="scale" type="range" min="40" max="110" value="90"></div>
+        <div class="field"><label class="check"><input id="checker" type="checkbox">Show transparency grid</label></div>
+        <div class="field"><label class="upload">Add product PNGs<input id="upload" type="file" multiple accept="image/png" aria-label="Add product PNGs"></label><p class="hint">Up to 15 MB and 16 million pixels. Your image stays on this device.</p></div>
+        <button type="button" id="export" class="primary" disabled>Export preview PNG</button>
+        <button type="button" id="asset" class="secondary" disabled>Download featured asset</button>
+        <button type="button" id="saveProject" class="secondary" disabled>Save project with all images</button><label class="upload" style="margin-top:9px">Open saved project<input id="openProject" type="file" accept=".json,application/json" aria-label="Open saved project"></label><p class="hint" id="saveState" role="status">Save your project to keep images and changes. This browser session is temporary.</p>
+        <p class="hint">Preview export includes the selected background or grid. The asset download preserves the original transparency.</p>
+      </aside>
+      <section class="preview-area" aria-label="Live preview">
+        <div class="preview-frame"><canvas id="preview" width="1200" height="750" role="img" aria-label="Campaign composition preview">Your browser needs canvas support to show this preview.</canvas></div>
+        <div class="preview-caption"><span id="dimensions">1200 × 750 pixels</span><span id="lineup">Core / Flow / Night / Pocket</span></div>
+        <div id="status" class="status" role="status" aria-live="polite">Loading the sample asset…</div>
+      </section>
+    </div>
+  </main>
+  <footer>Transparent Assets Studio is a portable local workspace. Circuit is the included example collection. Image generation and editing happen in your AI chat; this page composes assets locally. Inspired by <a href="https://developers.openai.com/cookbook/examples/multimodal/transparent-image-assets-for-campaigns-and-presentations">OpenAI’s transparent assets cookbook</a>. Composition changes happen locally.</footer>
+  <script>
+    'use strict';
+    let PROJECT = __PROJECT_JSON__;
+    let CIRCUIT = PROJECT.assets;
+    const elements = Object.fromEntries(['brand','saveProject','openProject','saveState','collection','arrangement','product','lineup','layout','headline','placement','scale','scaleValue','checker','upload','export','asset','preview','dimensions','status'].map(id => [id, document.getElementById(id)]));
+    const themes = { spring: ['#204d3e','#102a25','#ecfff0'], summer: ['#f1f4ec','#d4dcd3','#1e3027'], autumn: ['#dbe8f2','#b3c9d9','#172d3f'], winter: ['#383044','#171823','#f8f4ff'] };
+    const themeNames = {spring:'Terminal',summer:'Studio',autumn:'Cloud',winter:'Midnight'};
+    const formats = { campaign: [1200,750], slide: [1600,900], social: [1080,1080] };
+    const state = { theme: 'spring', library: {}, ready: false, loadVersion: 0, dirty: false };
+
+    function report(message, failed = false) {
+      elements.status.textContent = message;
+      elements.status.classList.toggle('error', failed);
+    }
+
+    function inspectAlpha(image) {
+      const scratch = document.createElement('canvas');
+      scratch.width = image.naturalWidth; scratch.height = image.naturalHeight;
+      const context = scratch.getContext('2d', {willReadFrequently: true});
+      context.drawImage(image, 0, 0);
+      const pixels = context.getImageData(0, 0, scratch.width, scratch.height).data;
+      let transparent = 0, partial = 0, visible = 0, minX = scratch.width, minY = scratch.height, maxX = -1, maxY = -1;
+      for (let i = 3; i < pixels.length; i += 4) {
+        const alpha = pixels[i];
+        if (alpha === 0) transparent++;
+        else {
+          visible++; if (alpha < 255) partial++;
+          const point = (i - 3) / 4, x = point % scratch.width, y = Math.floor(point / scratch.width);
+          minX = Math.min(minX,x); minY = Math.min(minY,y); maxX = Math.max(maxX,x); maxY = Math.max(maxY,y);
+        }
+      }
+      if (!visible) throw new Error('This PNG is entirely transparent. Choose an image with visible artwork.');
+      return { transparent: 100 * transparent / (pixels.length / 4), partial: 100 * partial / (pixels.length / 4), bounds: [minX,minY,maxX-minX+1,maxY-minY+1] };
+    }
+
+    async function decodeAsset(asset) {
+      const image = new Image(); image.src = asset.dataURL;
+      await image.decode();
+      if (image.naturalWidth * image.naturalHeight > 16000000) throw new Error('Image is too large. Choose a PNG under 16 million pixels.');
+      const stats = inspectAlpha(image);
+      return {...asset,image,stats,bounds:stats.bounds};
+    }
+
+    function visibleAssets() {
+      if (!state.ready) return [];
+      if (elements.collection.value !== 'circuit') return [state.library[elements.collection.value]].filter(Boolean);
+      const first = CIRCUIT.findIndex(asset => asset.id === elements.product.value);
+      const ordered = CIRCUIT.slice(first).concat(CIRCUIT.slice(0,first));
+      const count = {one:1,two:2,all:CIRCUIT.length}[elements.arrangement.value];
+      return ordered.slice(0,count).map(asset => state.library[asset.id]);
+    }
+
+    function showSelectionStatus() {
+      const assets = visibleAssets(), circuit = elements.collection.value === 'circuit';
+      elements.arrangement.disabled = !circuit || !state.ready;
+      elements.product.disabled = !circuit || !state.ready;
+      elements.lineup.textContent = assets.map(asset => asset.name).join(' / ');
+      if (!assets.length) return;
+      const opaque = assets.some(asset => asset.stats.transparent === 0);
+      report(`${opaque ? 'Opaque PNG — no transparent background found' : 'Real transparency verified'} · ${assets.map(asset => `${asset.name}: ${asset.stats.transparent.toFixed(1)}% clear`).join(' · ')}`,opaque);
+    }
+
+    async function loadAsset(dataURL, filename, version = ++state.loadVersion) {
+      const asset = await decodeAsset({id:'custom',name:filename,filename,dataURL});
+      if (version !== state.loadVersion) return;
+      state.library.custom = asset;
+      elements.collection.querySelector('[value=custom]').disabled = false;
+      elements.collection.value = 'custom';
+      showSelectionStatus();
+      render();
+    }
+
+    function drawHeadline(context, text, x, y, maxWidth, fontSize) {
+      context.font = `650 ${fontSize}px system-ui, sans-serif`;
+      const words = text.trim().split(/\s+/), lines = [];
+      let line = '';
+      for (const word of words) {
+        const candidate = line ? `${line} ${word}` : word;
+        if (context.measureText(candidate).width > maxWidth && line) { lines.push(line); line = word; }
+        else line = candidate;
+      }
+      if (line) lines.push(line);
+      if (lines.length > 4 && fontSize > 22) return drawHeadline(context,text,x,y,maxWidth,fontSize-4);
+      lines.slice(0,4).forEach((value,index) => context.fillText(value,x,y+index*fontSize*1.16,maxWidth));
+    }
+
+    function render() {
+      const canvas = elements.preview, [width,height] = formats[elements.layout.value];
+      canvas.width = width; canvas.height = height;
+      elements.dimensions.textContent = `${width} × ${height} pixels`;
+      elements.scaleValue.textContent = `${elements.scale.value}%`;
+      const context = canvas.getContext('2d'), palette = themes[state.theme];
+      if (elements.checker.checked) {
+        const tile = 24;
+        for (let y = 0; y < height; y += tile) for (let x = 0; x < width; x += tile) {
+          context.fillStyle = ((x / tile + y / tile) % 2) ? '#dededb' : '#f7f7f4'; context.fillRect(x,y,tile,tile);
+        }
+      } else {
+        const gradient = context.createLinearGradient(0,0,width,height);
+        gradient.addColorStop(0,palette[0]); gradient.addColorStop(1,palette[1]);
+        context.fillStyle = gradient; context.fillRect(0,0,width,height);
+      }
+      const position = elements.placement.value, social = elements.layout.value === 'social';
+      const assets = visibleAssets(), group = assets.length > 1, circuit = elements.collection.value === 'circuit';
+      if (position !== 'center') {
+        const x = group ? width*.07 : position === 'left' ? width*.57 : width*.07;
+        const copyWidth = width*(group ? .86 : .36);
+        context.fillStyle = elements.checker.checked ? '#25342a' : palette[2];
+        context.font = `500 ${Math.round(width*.014)}px monospace`;
+        context.fillText(circuit ? `${PROJECT.brand} / ${PROJECT.kicker}` : 'ASSET STUDIO / COLLECTION',x,height*(group ? .10 : .26),copyWidth);
+        drawHeadline(context,elements.headline.value,x,height*(group ? .20 : .37),copyWidth,width*(social ? .052 : .05));
+        context.font = `${Math.round(width*.015)}px monospace`;
+        context.fillText(circuit ? PROJECT.tagline : 'One object. Endless settings.',x,height*(group ? .94 : .79),copyWidth);
+      }
+      for (const [index,asset] of assets.entries()) {
+        const [sx,sy,sw,sh] = asset.bounds;
+        const factor = Number(elements.scale.value) / 100;
+        const slot = width*.86/assets.length;
+        const maxWidth = group ? slot*.86*factor : width * (position === 'center' ? .72 : .43) * factor;
+        const maxHeight = height * (group && position !== 'center' ? .46 : .79) * factor;
+        const ratio = Math.min(maxWidth/sw,maxHeight/sh), dw = sw*ratio, dh = sh*ratio;
+        const order = group && position === 'left' ? assets.length-1-index : index;
+        const centerX = group ? width*.07+slot*(order+.5) : width * (position === 'center' ? .5 : position === 'left' ? .27 : .73);
+        const bottom = height*(group && position !== 'center' ? .79 : .84);
+        const y = group ? bottom-dh : (height-dh)/2;
+        context.drawImage(asset.image,sx,sy,sw,sh,centerX-dw/2,y,dw,dh);
+        if (group && position !== 'center') {
+          context.fillStyle = elements.checker.checked ? '#25342a' : palette[2];
+          context.font = `500 ${Math.round(width*.016)}px monospace`;
+          context.textAlign = 'center'; context.fillText(asset.name.toUpperCase(),centerX,height*.85,slot*.9); context.textAlign = 'left';
+        }
+      }
+      canvas.setAttribute('aria-label',`${elements.layout.selectedOptions[0].textContent} preview, ${elements.checker.checked ? 'transparency grid' : themeNames[state.theme] + ' background'}, ${assets.map(asset=>asset.name).join(', ')}. Headline: ${elements.headline.value}`);
+    }
+
+    function download(url, filename) {
+      const link = document.createElement('a'); link.href = url; link.download = filename; document.body.append(link); link.click(); link.remove();
+    }
+    document.getElementById('backgrounds').addEventListener('click', event => {
+      const button = event.target.closest('[data-theme]'); if (!button) return;
+      state.theme = button.dataset.theme;
+      document.querySelectorAll('[data-theme]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      render();
+    });
+    ['layout','headline','placement','scale','checker'].forEach(id => elements[id].addEventListener('input',render));
+    ['collection','arrangement','product'].forEach(id => elements[id].addEventListener('change',() => {showSelectionStatus();render();}));
+    function safeName(text) { return text.toLowerCase().replace(/[^a-z0-9-]+/g,'-').replace(/^-|-$/g,'') || 'collection'; }
+
+    function markDirty() {
+      state.dirty = true;
+      elements.saveState.textContent = 'Unsaved changes. Save project to keep this collection and its settings.';
+    }
+
+    function validateProject(input) {
+      if (!input || typeof input !== 'object' || input.schemaVersion !== 1) throw new Error('Unsupported project. Choose a version 1 studio project.');
+      const clean = {schemaVersion:1}, limits = {name:80,brand:40,kicker:80,headline:80,tagline:100};
+      for (const [key,limit] of Object.entries(limits)) {
+        if (typeof input[key] !== 'string' || input[key].length > limit) throw new Error(`Invalid project ${key}.`);
+        clean[key] = input[key];
+      }
+      if (!Array.isArray(input.assets) || input.assets.length < 1 || input.assets.length > 32) throw new Error('A collection must contain 1–32 products.');
+      const ids = new Set(), names = new Set(); let total = 0;
+      clean.assets = input.assets.map(asset => {
+        if (!asset || !/^[a-z0-9-]{1,64}$/.test(asset.id) || ids.has(asset.id)) throw new Error('Asset IDs must be unique and valid.');
+        ids.add(asset.id);
+        if (typeof asset.name !== 'string' || asset.name.length < 1 || asset.name.length > 80) throw new Error('Invalid product name.');
+        if (typeof asset.filename !== 'string' || asset.filename.length > 120 || !/^[^/\\]+\.png$/i.test(asset.filename) || asset.filename.includes('..') || names.has(asset.filename)) throw new Error('Product filenames must be unique PNG basenames.');
+        names.add(asset.filename);
+        if (typeof asset.dataURL !== 'string' || !asset.dataURL.startsWith('data:image/png;base64,') || asset.dataURL.length > 21*1024*1024) throw new Error('Project contains an invalid or oversized PNG.');
+        let binary;
+        try { binary = atob(asset.dataURL.slice(22)); } catch { throw new Error('Project contains invalid image encoding.'); }
+        if (binary.length > 15*1024*1024 || ![137,80,78,71,13,10,26,10].every((value,index)=>binary.charCodeAt(index)===value)) throw new Error('Project contains an invalid PNG image.');
+        total += binary.length; if (total > 80*1024*1024) throw new Error('Project exceeds 80 MB of PNG data.');
+        return {id:asset.id,name:asset.name,filename:asset.filename,dataURL:asset.dataURL};
+      });
+      const settings = input.settings || {}; clean.settings = {};
+      const choices = {layout:['campaign','slide','social'],arrangement:['one','two','all'],product:[...ids],placement:['left','right','center'],theme:Object.keys(themes)};
+      for (const [key,values] of Object.entries(choices)) {
+        if (settings[key] !== undefined) {
+          if (!values.includes(settings[key])) throw new Error(`Invalid project setting: ${key}.`);
+          clean.settings[key] = settings[key];
+        }
+      }
+      if (settings.scale !== undefined) {
+        if (typeof settings.scale !== 'number' || settings.scale < 40 || settings.scale > 110) throw new Error('Invalid project scale.');
+        clean.settings.scale = settings.scale;
+      }
+      if (settings.checker !== undefined) {
+        if (typeof settings.checker !== 'boolean') throw new Error('Invalid transparency setting.');
+        clean.settings.checker = settings.checker;
+      }
+      return clean;
+    }
+
+    async function applyProject(input, version = ++state.loadVersion) {
+      const project = validateProject(input);
+      const assets = await Promise.all(project.assets.map(decodeAsset));
+      if (version !== state.loadVersion) return;
+      PROJECT = project; CIRCUIT = project.assets;
+      state.library = Object.fromEntries(assets.map(asset=>[asset.id,asset])); state.ready = true;
+      elements.product.replaceChildren(...assets.map(asset=>new Option(asset.name,asset.id)));
+      elements.brand.value = project.brand; elements.headline.value = project.headline;
+      document.querySelector('h1').textContent = project.headline || 'Your next collection.';
+      elements.collection.value = 'circuit';
+      const settings = project.settings;
+      for (const key of ['layout','arrangement','product','placement','scale']) if (settings[key] !== undefined) elements[key].value = settings[key];
+      state.theme = settings.theme || 'spring'; elements.checker.checked = settings.checker || false;
+      document.querySelectorAll('[data-theme]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.theme===state.theme)));
+      elements.upload.disabled = false; elements.export.disabled = false; elements.asset.disabled = false; elements.saveProject.disabled = false;
+      state.dirty = false; elements.saveState.textContent = 'Project loaded. Save project after making changes; this browser session is temporary.';
+      showSelectionStatus(); render();
+    }
+
+    elements.brand.addEventListener('input',()=>{PROJECT.brand=elements.brand.value;PROJECT.name=elements.brand.value;markDirty();render();});
+    elements.headline.addEventListener('input',()=>{PROJECT.headline=elements.headline.value;document.querySelector('h1').textContent=PROJECT.headline || 'Your next collection.';markDirty();});
+    ['layout','arrangement','product','placement','scale','checker'].forEach(id=>elements[id].addEventListener('input',markDirty));
+    document.getElementById('backgrounds').addEventListener('click',markDirty);
+
+    elements.upload.addEventListener('change',async()=>{
+      const files = [...elements.upload.files]; if (!files.length) return;
+      const version = ++state.loadVersion;
+      try {
+        if (CIRCUIT.length + files.length > 32) throw new Error('A collection can contain at most 32 products.');
+        const newAssets = [];
+        for (const [index,file] of files.entries()) {
+          if (file.type !== 'image/png' || !/\.png$/i.test(file.name) || file.size > 15*1024*1024) throw new Error('Choose PNG images no larger than 15 MB.');
+          const signature = new Uint8Array(await file.slice(0,8).arrayBuffer());
+          if (![137,80,78,71,13,10,26,10].every((value,i)=>signature[i]===value)) throw new Error('One of the files is not a valid PNG.');
+          const dataURL = await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('Could not read a PNG.'));reader.readAsDataURL(file);});
+          const id = `product-${Date.now()}-${index}`;
+          newAssets.push({id,name:file.name.replace(/\.png$/i,'').slice(0,80),filename:`${id}.png`,dataURL});
+        }
+        const candidate = {...PROJECT,assets:[...CIRCUIT,...newAssets],settings:projectSettings()};
+        await applyProject(candidate,version); if (version===state.loadVersion) markDirty();
+      } catch(error) { if(version===state.loadVersion) report(error.message,true); }
+      finally { elements.upload.value=''; }
+    });
+
+    function projectSettings() {
+      return {layout:elements.layout.value,arrangement:elements.arrangement.value,product:elements.product.value,placement:elements.placement.value,theme:state.theme,scale:Number(elements.scale.value),checker:elements.checker.checked};
+    }
+    elements.saveProject.addEventListener('click',()=>{
+      const project = {...PROJECT,assets:CIRCUIT,brand:elements.brand.value,headline:elements.headline.value,settings:projectSettings()};
+      const blob = new Blob([JSON.stringify(project,null,2)],{type:'application/json'}), url=URL.createObjectURL(blob);
+      download(url,`${safeName(project.brand)}.studio.json`); setTimeout(()=>URL.revokeObjectURL(url),10000);
+      state.dirty=false; elements.saveState.textContent='Project exported. Keep the downloaded .studio.json to reopen or share this collection.';
+    });
+    elements.openProject.addEventListener('change',async()=>{
+      const file=elements.openProject.files[0]; if(!file) return;
+      const version=++state.loadVersion;
+      try {
+        if (file.size > 120*1024*1024 || !/\.json$/i.test(file.name)) throw new Error('Choose a studio JSON project under 120 MB.');
+        const project=JSON.parse(await file.text()); await applyProject(project,version);
+      } catch(error) { if(version===state.loadVersion) report(`Could not open project: ${error.message}`,true); }
+      finally { elements.openProject.value=''; }
+    });
+    window.addEventListener('beforeunload',event=>{if(state.dirty){event.preventDefault();event.returnValue='';}});
+    elements.export.addEventListener('click',() => {
+      try {
+        elements.preview.toBlob(blob => {
+          if (!blob) { report('Export failed. Try a smaller format.',true); return; }
+          const url = URL.createObjectURL(blob);
+          download(url,`${safeName(PROJECT.brand)}-${elements.layout.value}-${elements.arrangement.value}-${elements.checker.checked ? 'transparency' : themeNames[state.theme].toLowerCase()}.png`);
+          setTimeout(() => URL.revokeObjectURL(url),10000);
+        },'image/png');
+      } catch (error) { report(`Export failed: ${error.message}`,true); }
+    });
+    elements.asset.addEventListener('click',() => {const asset = visibleAssets()[0]; if (asset) download(asset.dataURL,asset.filename);});
+    render();
+    elements.upload.disabled = true;
+    applyProject(PROJECT).catch(error=>report(`Could not load the collection: ${error.message}`,true));
+  </script>
+</body>
+</html>
